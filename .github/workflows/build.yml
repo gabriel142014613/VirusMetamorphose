@@ -4,24 +4,31 @@ name: Compiler Virus Metamorphose
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    container:
-      image: devkitpro/devkitarm:latest
-
     steps:
-      - name: Recuperer le projet
+      - name: Recuperer les fichiers
         uses: actions/checkout@v4
 
-      - name: Compiler le jeu
+      - name: Installer Docker et compiler
         run: |
-          make
+          docker run --rm \
+            -v "$PWD:/project" \
+            -w /project \
+            devkitpro/devkitarm:latest \
+            bash -c "make"
 
-      - name: Publier la ROM DS
+      - name: Verifier la ROM
+        run: |
+          test -f VirusMetamorphose.nds
+          ls -lh VirusMetamorphose.nds
+
+      - name: Telecharger la ROM
         uses: actions/upload-artifact@v4
         with:
           name: VirusMetamorphose-DS
