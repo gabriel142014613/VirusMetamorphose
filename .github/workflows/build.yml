@@ -4,8 +4,7 @@ name: Compiler Virus Metamorphose
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
@@ -16,11 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compiler le jeu
+      - name: Compiler
         run: make
 
-      - name: Verifier la ROM
-        run: test -f VirusMetamorphose.nds
+      - name: Verifier
+        run: ls -lh VirusMetamorphose.nds
 
       - name: Publier la ROM
         uses: actions/upload-artifact@v4
