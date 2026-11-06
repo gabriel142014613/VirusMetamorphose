@@ -1,0 +1,28 @@
+
+name: Compiler Virus Metamorphose
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: devkitpro/devkitarm:latest
+
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+
+      - name: Compiler le jeu
+        run: |
+          make
+
+      - name: Publier la ROM DS
+        uses: actions/upload-artifact@v4
+        with:
+          name: VirusMetamorphose-DS
+          path: VirusMetamorphose.nds
