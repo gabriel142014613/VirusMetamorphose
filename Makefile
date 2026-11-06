@@ -1,23 +1,25 @@
 
-.SUFFIXES:
-
-ifeq ($(strip $(DEVKITPRO)),)
-$(error DEVKITPRO is not set)
-endif
-
-include $(DEVKITPRO)/libnds/default_ds_rules
-
 TARGET := VirusMetamorphose
 BUILD := build
 SOURCES := source
-DATA :=
-INCLUDES :=
 
-ARCH := -march=armv5te -mtune=arm946e-s
-CFLAGS := -g -Wall -O2 $(ARCH) -DARM9
-CXXFLAGS := $(CFLAGS) -fno-rtti -fno-exceptions
-ASFLAGS := -g $(ARCH)
+CC := arm-none-eabi-gcc
 
-LDFLAGS := -specs=ds_arm9.specs
-LIBS := -lnds9
-LIBDIRS := $(LIBNDS)
+ARCH := -march=armv5te -mtune=arm946e-s -mthumb-interwork
+CFLAGS := -O2 -Wall $(ARCH) -DARM9
+
+INCLUDES := -I$(DEVKITPRO)/libnds/include
+LIBS := -L$(DEVKITPRO)/libnds/lib -lnds9
+
+all:
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) $(INCLUDES) \
+		-specs=ds_arm9.specs \
+		$(SOURCES)/main.c \
+		$(LIBS) \
+		-o $(BUILD)/VirusMetamorphose.elf
+	ndstool -c $(TARGET).nds \
+		-9 $(BUILD)/VirusMetamorphose.elf
+
+clean:
+	rm -rf $(BUILD) $(TARGET).nds
