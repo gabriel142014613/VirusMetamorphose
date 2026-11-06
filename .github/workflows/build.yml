@@ -4,22 +4,35 @@ name: Compiler Virus Metamorphose
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     container:
       image: devkitpro/devkitarm:latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
 
-      - name: Compiler
-        run: make
+      - name: Verifier les outils ARM
+        run: |
+          echo "PATH=$PATH"
+          ls -la /opt/devkitpro/devkitARM/bin
+          export PATH="/opt/devkitpro/devkitARM/bin:$PATH"
+          arm-none-eabi-gcc --version
+          ndstool --version || true
 
-      - name: Verifier
-        run: ls -lh VirusMetamorphose.nds
+      - name: Compiler le jeu
+        run: |
+          export PATH="/opt/devkitpro/devkitARM/bin:$PATH"
+          make
+
+      - name: Verifier la ROM
+        run: |
+          ls -lh VirusMetamorphose.nds
 
       - name: Publier la ROM
         uses: actions/upload-artifact@v4
